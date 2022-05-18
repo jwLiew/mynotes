@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:mynotes/services/crud/crud_exceptions.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' show join;
 
 class NotesService {
   Database? _db;
@@ -74,7 +74,7 @@ class NotesService {
   }
 
   Future<DatabaseNote> getNote({required int id}) async {
-    _ensureDbIsOpen();
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final notes = await db.query(
       noteTable,
@@ -97,10 +97,10 @@ class NotesService {
   Future<int> deleteAllNotes() async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-    final numberOfDeletionos = await db.delete(noteTable);
+    final numberOfDeletions = await db.delete(noteTable);
     _notes = [];
     _notesStreamController.add(_notes);
-    return numberOfDeletionos;
+    return numberOfDeletions;
   }
 
   Future<void> deleteNote({required int id}) async {
@@ -108,7 +108,7 @@ class NotesService {
     final db = _getDatabaseOrThrow();
     final deletedCount = await db.delete(
       noteTable,
-      where: 'id= ?',
+      where: 'id = ?',
       whereArgs: [id],
     );
     if (deletedCount == 0) {
@@ -123,14 +123,14 @@ class NotesService {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
-    //make sure owner exists in the database with the correct id
+    // make sure owner exists in the database with the correct id
     final dbUser = await getUser(email: owner.email);
     if (dbUser != owner) {
       throw CouldNotFindUser();
     }
 
     const text = '';
-    //create the note
+    // create the note
     final noteId = await db.insert(noteTable, {
       userIdColumn: owner.id,
       textColumn: text,
@@ -181,10 +181,9 @@ class NotesService {
       throw UserAlreadyExists();
     }
 
-    final userId = await db.insert(
-      userTable,
-      {emailColumn: email.toLowerCase()},
-    );
+    final userId = await db.insert(userTable, {
+      emailColumn: email.toLowerCase(),
+    });
 
     return DatabaseUser(
       id: userId,
@@ -228,7 +227,7 @@ class NotesService {
     try {
       await open();
     } on DatabaseAlreadyOpenException {
-      //empty
+      // empty
     }
   }
 
@@ -241,9 +240,9 @@ class NotesService {
       final dbPath = join(docsPath.path, dbName);
       final db = await openDatabase(dbPath);
       _db = db;
-      //create user table
+      // create the user table
       await db.execute(createUserTable);
-      //create note table
+      // create note table
       await db.execute(createNoteTable);
       await _cacheNotes();
     } on MissingPlatformDirectoryException {
@@ -314,16 +313,16 @@ const emailColumn = 'email';
 const userIdColumn = 'user_id';
 const textColumn = 'text';
 const isSyncedWithCloudColumn = 'is_synced_with_cloud';
-const createUserTable = '''CREATE TABLE IF NOT EXIST "user" (
-      	"id"	INTEGER NOT NULL,
-	      "email"	TEXT NOT NULL UNIQUE,
-      	PRIMARY KEY("id" AUTOINCREMENT)
+const createUserTable = '''CREATE TABLE IF NOT EXISTS "user" (
+        "id"	INTEGER NOT NULL,
+        "email"	TEXT NOT NULL UNIQUE,
+        PRIMARY KEY("id" AUTOINCREMENT)
       );''';
-const createNoteTable = '''CREATE TABLE IF NOT EXIST "note" (
-	      "id"	INTEGER NOT NULL,
-	      "user_id"	INTEGER NOT NULL,
-	      "test"	TEXT,
-	      "is_synced_with_cloud"	INTEGER NOT NULL DEFAULT 0,
-	      PRIMARY KEY("id" AUTOINCREMENT),
-	      FOREIGN KEY("user_id") REFERENCES "user"("id")
+const createNoteTable = '''CREATE TABLE IF NOT EXISTS "note" (
+        "id"	INTEGER NOT NULL,
+        "user_id"	INTEGER NOT NULL,
+        "text"	TEXT,
+        "is_synced_with_cloud"	INTEGER NOT NULL DEFAULT 0,
+        FOREIGN KEY("user_id") REFERENCES "user"("id"),
+        PRIMARY KEY("id" AUTOINCREMENT)
       );''';

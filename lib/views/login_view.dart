@@ -43,7 +43,7 @@ class _LoginViewState extends State<LoginView> {
             autocorrect: false,
             keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(
-              hintText: 'Enter your email',
+              hintText: 'Enter your email here',
             ),
           ),
           TextField(
@@ -52,7 +52,7 @@ class _LoginViewState extends State<LoginView> {
             enableSuggestions: false,
             autocorrect: false,
             decoration: const InputDecoration(
-              hintText: 'Enter your password',
+              hintText: 'Enter your password here',
             ),
           ),
           TextButton(
@@ -66,29 +66,29 @@ class _LoginViewState extends State<LoginView> {
                 );
                 final user = AuthService.firebase().currentUser;
                 if (user?.isEmailVerified ?? false) {
-                  //email verified
+                  // user's email is verified
                   Navigator.of(context).pushNamedAndRemoveUntil(
                     notesRoute,
                     (route) => false,
                   );
                 } else {
-                  //email not verified
+                  // user's email is NOT verified
                   Navigator.of(context).pushNamedAndRemoveUntil(
                     verifyEmailRoute,
                     (route) => false,
                   );
                 }
-              } on UserNotFoundAuthExceptions {
+              } on UserNotFoundAuthException {
                 await showErrorDialog(
                   context,
                   'User not found',
                 );
-              } on WrongPasswordAuthExceptions {
+              } on WrongPasswordAuthException {
                 await showErrorDialog(
                   context,
                   'Wrong credentials',
                 );
-              } on GenericAuthExceptions {
+              } on GenericAuthException {
                 await showErrorDialog(
                   context,
                   'Authentication error',
@@ -104,7 +104,7 @@ class _LoginViewState extends State<LoginView> {
                 (route) => false,
               );
             },
-            child: const Text('Not registered yet? Register here'),
+            child: const Text('Not registered yet? Register here!'),
           )
         ],
       ),

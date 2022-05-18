@@ -8,7 +8,7 @@ class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
 
   @override
-  State<RegisterView> createState() => _RegisterViewState();
+  _RegisterViewState createState() => _RegisterViewState();
 }
 
 class _RegisterViewState extends State<RegisterView> {
@@ -43,7 +43,7 @@ class _RegisterViewState extends State<RegisterView> {
             autocorrect: false,
             keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(
-              hintText: 'Enter your email',
+              hintText: 'Enter your email here',
             ),
           ),
           TextField(
@@ -52,7 +52,7 @@ class _RegisterViewState extends State<RegisterView> {
             enableSuggestions: false,
             autocorrect: false,
             decoration: const InputDecoration(
-              hintText: 'Enter your password',
+              hintText: 'Enter your password here',
             ),
           ),
           TextButton(
@@ -66,22 +66,22 @@ class _RegisterViewState extends State<RegisterView> {
                 );
                 AuthService.firebase().sendEmailVerification();
                 Navigator.of(context).pushNamed(verifyEmailRoute);
-              } on WeakPasswordAuthExceptions {
+              } on WeakPasswordAuthException {
                 await showErrorDialog(
                   context,
                   'Weak password',
                 );
-              } on EmailAlreadyInUseAuthExceptions {
+              } on EmailAlreadyInUseAuthException {
                 await showErrorDialog(
                   context,
                   'Email is already in use',
                 );
-              } on InvalidEmailAuthExceptions {
+              } on InvalidEmailAuthException {
                 await showErrorDialog(
                   context,
                   'This is an invalid email address',
                 );
-              } on GenericAuthExceptions {
+              } on GenericAuthException {
                 await showErrorDialog(
                   context,
                   'Failed to register',
@@ -97,7 +97,7 @@ class _RegisterViewState extends State<RegisterView> {
                 (route) => false,
               );
             },
-            child: const Text('Already registered? Login Here!'),
+            child: const Text('Already registered? Login here!'),
           )
         ],
       ),

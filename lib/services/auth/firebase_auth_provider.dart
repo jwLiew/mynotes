@@ -29,20 +29,20 @@ class FirebaseAuthProvider implements AuthProvider {
       if (user != null) {
         return user;
       } else {
-        throw UserNotLoggedInAuthExceptions();
+        throw UserNotLoggedInAuthException();
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        throw WeakPasswordAuthExceptions();
+        throw WeakPasswordAuthException();
       } else if (e.code == 'email-already-in-use') {
-        throw EmailAlreadyInUseAuthExceptions();
+        throw EmailAlreadyInUseAuthException();
       } else if (e.code == 'invalid-email') {
-        throw InvalidEmailAuthExceptions();
+        throw InvalidEmailAuthException();
       } else {
-        throw GenericAuthExceptions();
+        throw GenericAuthException();
       }
     } catch (_) {
-      throw GenericAuthExceptions();
+      throw GenericAuthException();
     }
   }
 
@@ -70,18 +70,18 @@ class FirebaseAuthProvider implements AuthProvider {
       if (user != null) {
         return user;
       } else {
-        throw UserNotLoggedInAuthExceptions();
+        throw UserNotLoggedInAuthException();
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        throw UserNotFoundAuthExceptions();
+        throw UserNotFoundAuthException();
       } else if (e.code == 'wrong-password') {
-        throw WrongPasswordAuthExceptions();
+        throw WrongPasswordAuthException();
       } else {
-        throw GenericAuthExceptions();
+        throw GenericAuthException();
       }
-    } catch (e) {
-      throw GenericAuthExceptions();
+    } catch (_) {
+      throw GenericAuthException();
     }
   }
 
@@ -91,7 +91,7 @@ class FirebaseAuthProvider implements AuthProvider {
     if (user != null) {
       await FirebaseAuth.instance.signOut();
     } else {
-      throw UserNotLoggedInAuthExceptions();
+      throw UserNotLoggedInAuthException();
     }
   }
 
@@ -101,7 +101,7 @@ class FirebaseAuthProvider implements AuthProvider {
     if (user != null) {
       await user.sendEmailVerification();
     } else {
-      throw UserNotLoggedInAuthExceptions();
+      throw UserNotLoggedInAuthException();
     }
   }
 }
